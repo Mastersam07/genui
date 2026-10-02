@@ -4,13 +4,7 @@ import 'package:json_schema_builder/json_schema_builder.dart';
 
 import '../theme.dart';
 
-// A custom catalog item has three parts:
-//   1. a schema    -> what Gemini is allowed to send (it reads this!)
-//   2. a builder   -> turns that JSON into a Flutter widget
-//   3. a widget    -> plain Flutter, designed by you
-
-// 1. The schema. Descriptions are prompts: Gemini reads them to decide
-//    when and how to use this widget.
+// Gemini reads these descriptions to decide when and how to use the widget.
 final _recipeCardSchema = S.object(
   description:
       'A summary card for one dish. Use it as the first component whenever '
@@ -26,35 +20,57 @@ final _recipeCardSchema = S.object(
   required: ['title', 'description', 'minutes', 'action'],
 );
 
-// 2. The catalog item: a name, the schema, and a builder.
+extension type _RecipeCardData(JsonMap json) {
+  String get title => switch (json['title']) {
+    final String title => title,
+    _ => '',
+  };
+  String? get region => switch (json['region']) {
+    final String region => region,
+    _ => null,
+  };
+  String get description => switch (json['description']) {
+    final String text => text,
+    _ => '',
+  };
+  int get minutes => switch (json['minutes']) {
+    final num minutes => minutes.toInt(),
+    _ => 0,
+  };
+  int get spiceLevel => switch (json['spiceLevel']) {
+    final num level => level.toInt(),
+    _ => 0,
+  };
+  JsonMap? get action => switch (json['action']) {
+    final JsonMap action => action,
+    _ => null,
+  };
+}
+
 final recipeCard = CatalogItem(
   name: 'RecipeCard',
   dataSchema: _recipeCardSchema,
   widgetBuilder: (itemContext) {
-    final data = itemContext.data as JsonMap;
+    final data = _RecipeCardData(itemContext.data as JsonMap);
     return RecipeCard(
-      title: data['title'] as String? ?? '',
-      region: data['region'] as String?,
-      description: data['description'] as String? ?? '',
-      minutes: (data['minutes'] as num?)?.toInt() ?? 0,
-      spiceLevel: (data['spiceLevel'] as num?)?.toInt() ?? 0,
-      onStartCooking: () => _sendAction(itemContext, data['action'] as JsonMap?),
+      title: data.title,
+      region: data.region,
+      description: data.description,
+      minutes: data.minutes,
+      spiceLevel: data.spiceLevel,
+      onStartCooking: () => _sendAction(itemContext, data.action),
     );
   },
 );
 
-/// Tells genui the user tapped. genui sends this event back to Gemini as
-/// the next turn of the conversation, so no extra wiring is needed.
+/// genui sends this event to Gemini as the next conversation turn.
 Future<void> _sendAction(CatalogItemContext itemContext, JsonMap? action) async {
-  final event = action?['event'] as JsonMap?;
-  if (event == null) return;
-  final context = await resolveContext(itemContext.dataContext, event['context'] as JsonMap?);
-  itemContext.dispatchEvent(
-    UserActionEvent(name: event['name'] as String, sourceComponentId: itemContext.id, context: context),
-  );
+  if (action?['event'] case {'name': final String name} && final JsonMap event) {
+    final context = await resolveContext(itemContext.dataContext, event['context'] as JsonMap?);
+    itemContext.dispatchEvent(UserActionEvent(name: name, sourceComponentId: itemContext.id, context: context));
+  }
 }
 
-// 3. The widget. Nothing genui-specific here: a normal Flutter widget.
 class RecipeCard extends StatelessWidget {
   const RecipeCard({
     super.key,
@@ -77,18 +93,17 @@ class RecipeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
     return Card(
-      clipBehavior: Clip.antiAlias,
+      clipBehavior: .antiAlias,
       child: IntrinsicHeight(
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: .stretch,
           children: [
-            // The blue band: the one bold mark that says "a recipe".
             Container(width: 6, color: KitchenColors.accent),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(KitchenSpace.xl),
+                padding: const .all(KitchenSpace.xl),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
                     if (region case final region?)
                       Container(
@@ -106,11 +121,15 @@ class RecipeCard extends StatelessWidget {
                     Text(description, style: text.bodyMedium?.copyWith(color: KitchenColors.inkMuted)),
                     const SizedBox(height: KitchenSpace.lg),
                     Row(
+                      spacing: KitchenSpace.lg,
                       children: [
-                        const Icon(Icons.schedule, size: 18, color: KitchenColors.inkMuted),
-                        const SizedBox(width: KitchenSpace.xs),
-                        Text('$minutes min', style: text.bodyMedium),
-                        const SizedBox(width: KitchenSpace.lg),
+                        Row(
+                          spacing: KitchenSpace.xs,
+                          children: [
+                            const Icon(Icons.schedule, size: 18, color: KitchenColors.inkMuted),
+                            Text('$minutes min', style: text.bodyMedium),
+                          ],
+                        ),
                         _SpiceMeter(level: spiceLevel),
                       ],
                     ),
@@ -146,8 +165,8 @@ class _SpiceMeter extends StatelessWidget {
       excludeSemantics: true,
       child: Row(
         children: [
-          for (var i = 1; i <= 3; i++)
-            Icon(Icons.whatshot, size: 18, color: i <= clamped ? KitchenColors.spice : KitchenColors.spiceOff),
+          for (final chili in [1, 2, 3])
+            Icon(Icons.whatshot, size: 18, color: chili <= clamped ? KitchenColors.spice : KitchenColors.spiceOff),
         ],
       ),
     );

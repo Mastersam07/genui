@@ -17,7 +17,8 @@ Each step is a git tag. Jump to any of them with `git checkout <tag>`.
 | `step-2` | genui wired in: Gemini builds UI from the basic catalog         |
 | `step-3` | Custom `RecipeCard` catalog item with a "Start cooking" action  |
 | `step-4` | `ServingsStepper` + `IngredientChecklist` sharing the data model |
-| `step-5` | Final: steered system prompt, guardrails, logging               |
+| `step-5` | Steered system prompt, guardrails, logging, DevFest theme      |
+| `step-6` | Final: idiomatic Dart 3 (patterns, extension types, dot shorthands) |
 
 ## Setup (10 minutes, do it before the workshop)
 

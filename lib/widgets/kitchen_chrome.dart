@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../theme.dart';
 
-/// The app's fixed UI around the conversation: header, message rows,
-/// composer, and the empty / waiting / error states. None of this is
-/// generated. It stays the same through every workshop step.
-
 class KitchenHeader extends StatelessWidget {
   const KitchenHeader({super.key});
 
@@ -13,8 +9,9 @@ class KitchenHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(KitchenSpace.xl, KitchenSpace.lg, KitchenSpace.xl, KitchenSpace.md),
+      padding: const .fromLTRB(KitchenSpace.xl, KitchenSpace.lg, KitchenSpace.xl, KitchenSpace.md),
       child: Row(
+        spacing: KitchenSpace.md,
         children: [
           Container(
             width: 40,
@@ -22,15 +19,14 @@ class KitchenHeader extends StatelessWidget {
             decoration: BoxDecoration(
               color: KitchenColors.brand,
               border: .all(color: KitchenColors.border, width: 1.5),
-              borderRadius: BorderRadius.circular(KitchenRadius.control),
+              borderRadius: .circular(KitchenRadius.control),
             ),
-            alignment: Alignment.center,
+            alignment: .center,
             child: const Icon(Icons.soup_kitchen_outlined, color: KitchenColors.ink),
           ),
-          const SizedBox(width: KitchenSpace.md),
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
                 Text('Naija Kitchen', style: text.titleLarge),
                 Text('Tell me what is in your pot.', style: text.bodySmall?.copyWith(color: KitchenColors.inkMuted)),
@@ -51,7 +47,7 @@ class UserMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Align(
-      alignment: Alignment.centerRight,
+      alignment: .centerRight,
       child: Container(
         constraints: const BoxConstraints(maxWidth: 420),
         padding: const .symmetric(horizontal: KitchenSpace.lg, vertical: KitchenSpace.md),
@@ -70,7 +66,7 @@ class AssistantMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Align(
-      alignment: Alignment.centerLeft,
+      alignment: .centerLeft,
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 560),
         child: Text(text.trim(), style: Theme.of(context).textTheme.bodyLarge),
@@ -79,7 +75,6 @@ class AssistantMessage extends StatelessWidget {
   }
 }
 
-/// Shown while Gemini is working. Three dots that rise in turn.
 class CookingIndicator extends StatefulWidget {
   const CookingIndicator({super.key});
 
@@ -104,23 +99,25 @@ class _CookingIndicatorState extends State<CookingIndicator> with SingleTickerPr
     return Semantics(
       label: 'Gemini is cooking up a reply',
       child: Row(
+        spacing: KitchenSpace.sm,
         children: [
-          for (var i = 0; i < 3; i++)
-            AnimatedBuilder(
-              animation: _controller,
-              builder: (context, _) {
-                final t = (_controller.value - i * 0.2) % 1.0;
-                final lift = still ? 0.0 : (t < 0.5 ? t : 1 - t) * 8;
-                return Padding(
-                  padding: const .only(right: KitchenSpace.xs),
-                  child: Transform.translate(
-                    offset: Offset(0, -lift),
-                    child: CircleAvatar(radius: 4, backgroundColor: _dotColors[i]),
-                  ),
-                );
-              },
-            ),
-          const SizedBox(width: KitchenSpace.sm),
+          Row(
+            spacing: KitchenSpace.xs,
+            children: [
+              for (final (i, color) in _dotColors.indexed)
+                AnimatedBuilder(
+                  animation: _controller,
+                  builder: (context, _) {
+                    final t = (_controller.value - i * 0.2) % 1.0;
+                    final lift = still ? 0.0 : (t < 0.5 ? t : 1 - t) * 8;
+                    return Transform.translate(
+                      offset: Offset(0, -lift),
+                      child: CircleAvatar(radius: 4, backgroundColor: color),
+                    );
+                  },
+                ),
+            ],
+          ),
           Text(
             'Stirring the pot…',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: KitchenColors.inkMuted),
@@ -155,12 +152,12 @@ class EmptyKitchen extends StatelessWidget {
             const SizedBox(height: KitchenSpace.lg),
             Text(
               'Ask for any Nigerian dish.\nI will plate up the recipe for you.',
-              textAlign: TextAlign.center,
+              textAlign: .center,
               style: text.bodyLarge?.copyWith(color: KitchenColors.inkMuted),
             ),
             const SizedBox(height: KitchenSpace.xl),
             Wrap(
-              alignment: WrapAlignment.center,
+              alignment: .center,
               spacing: KitchenSpace.sm,
               runSpacing: KitchenSpace.sm,
               children: [for (final s in suggestions) ActionChip(label: Text(s), onPressed: () => onSuggestion(s))],
@@ -182,7 +179,7 @@ class ErrorNote extends StatelessWidget {
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
     return Container(
-      padding: const EdgeInsets.all(KitchenSpace.lg),
+      padding: const .all(KitchenSpace.lg),
       decoration: BoxDecoration(
         color: DevFestPalette.pastelRed,
         border: .all(color: KitchenColors.error, width: 1.5),
@@ -191,7 +188,7 @@ class ErrorNote extends StatelessWidget {
       child: Column(
         crossAxisAlignment: .start,
         children: [
-          Text('Gemini did not answer that one.', style: text.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+          Text('Gemini did not answer that one.', style: text.titleSmall?.copyWith(fontWeight: .w700)),
           const SizedBox(height: KitchenSpace.xs),
           Text(
             message,
@@ -235,18 +232,18 @@ class _ComposerState extends State<Composer> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(KitchenSpace.lg, KitchenSpace.sm, KitchenSpace.lg, KitchenSpace.lg),
+      padding: const .fromLTRB(KitchenSpace.lg, KitchenSpace.sm, KitchenSpace.lg, KitchenSpace.lg),
       child: Row(
+        spacing: KitchenSpace.sm,
         children: [
           Expanded(
             child: TextField(
               controller: _text,
-              textInputAction: TextInputAction.send,
+              textInputAction: .send,
               onSubmitted: (_) => _submit(),
               decoration: const InputDecoration(hintText: 'e.g. Efo riro with what I have at home'),
             ),
           ),
-          const SizedBox(width: KitchenSpace.sm),
           IconButton.filled(
             onPressed: widget.enabled ? _submit : null,
             tooltip: 'Send',

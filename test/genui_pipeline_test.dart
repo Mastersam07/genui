@@ -5,8 +5,6 @@ import 'package:logging/logging.dart';
 import 'package:naija_kitchen/catalog/ingredient_checklist.dart';
 import 'package:naija_kitchen/catalog/kitchen_catalog.dart';
 
-/// Feeds a canned Gemini reply through the real genui pipeline (no network)
-/// and checks that the surface renders.
 Future<SurfaceController> pumpReply(WidgetTester tester, String reply) async {
   late SurfaceController controller;
   final surfaceIds = <String>[];
@@ -16,8 +14,8 @@ Future<SurfaceController> pumpReply(WidgetTester tester, String reply) async {
     controller = SurfaceController(catalogs: [kitchenCatalog()]);
     final transport = A2uiTransportAdapter(onSend: (_) async {});
     final conversation = Conversation(controller: controller, transport: transport);
-    conversation.events.listen((e) {
-      if (e is ConversationSurfaceAdded) surfaceIds.add(e.surfaceId);
+    conversation.events.listen((event) {
+      if (event case ConversationSurfaceAdded(:final surfaceId)) surfaceIds.add(surfaceId);
     });
     addTearDown(() {
       conversation.dispose();
@@ -25,7 +23,6 @@ Future<SurfaceController> pumpReply(WidgetTester tester, String reply) async {
       controller.dispose();
     });
 
-    // Simulate streaming: split the reply into small chunks.
     for (var i = 0; i < reply.length; i += 37) {
       transport.addChunk(reply.substring(i, (i + 37).clamp(0, reply.length)));
     }
@@ -94,7 +91,7 @@ Jollof coming up!
 ''';
 
 void main() {
-  configureLogging(level: Level.ALL, logCallback: (l, m) => debugPrint("GENUI $l $m"));
+  configureLogging(level: Level.ALL, logCallback: (level, message) => debugPrint('GENUI $level $message'));
   testWidgets('basic catalog surface renders from streamed text', (tester) async {
     await pumpReply(tester, basicReply);
     expect(find.text('Party Jollof Rice'), findsOneWidget);
@@ -125,7 +122,6 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('4 cups'), findsOneWidget);
 
-    // 4 -> 6 servings: no Gemini call, Flutter rescales 4 cups to 6.
     for (var i = 0; i < 2; i++) {
       await tester.tap(find.byTooltip('More people'));
       // genui's data model notifies through signals; let them settle.
@@ -136,7 +132,6 @@ void main() {
     expect(find.text('6 cups'), findsOneWidget);
     expect(find.text('5 pieces'), findsOneWidget); // 4.5 rounds up
 
-    // The chosen servings ride along when the user taps Start cooking.
     final submitted = <ChatMessage>[];
     final sub = controller.onSubmit.listen(submitted.add);
     addTearDown(sub.cancel);

@@ -10,7 +10,6 @@ const kitchenModel = 'gemini-3.8-flash';
 /// conversation instead of calling Gemini. Use it when the Wi-Fi gives up.
 const offlineDemo = bool.fromEnvironment('OFFLINE_DEMO');
 
-/// Starts a multi-turn chat. The ChatSession keeps the history for us.
 ChatSession startKitchenChat({required String systemInstruction}) {
   final model = FirebaseAI.googleAI().generativeModel(
     model: kitchenModel,
@@ -19,8 +18,7 @@ ChatSession startKitchenChat({required String systemInstruction}) {
   return model.startChat();
 }
 
-/// One place that talks to the model, live or recorded.
-class KitchenChef {
+final class KitchenChef {
   KitchenChef({required this.systemInstruction});
 
   final String systemInstruction;

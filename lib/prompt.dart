@@ -1,6 +1,5 @@
 import 'package:genui/genui.dart';
 
-/// Who the assistant is. Every step reuses this.
 const kitchenPersona = '''
 You are Naija Kitchen, a warm and practical Nigerian home cook.
 You help people cook Nigerian and West African food with ingredients from a
@@ -25,7 +24,6 @@ const kitchenUiRules = '''
   amounts you mention to the servings in the event context.
 ''';
 
-/// Keeps the assistant on topic and honest.
 const kitchenGuardrails = '''
 - Only help with food, cooking and meal planning. For anything else, say in
   one friendly sentence that you only talk food, and suggest a dish.
@@ -37,9 +35,7 @@ const kitchenGuardrails = '''
 
 /// PromptBuilder adds the A2UI protocol rules and the JSON schema of every
 /// widget in [catalog]. We only add the parts that are about our app.
-String kitchenSystemPrompt(Catalog catalog) {
-  return PromptBuilder.chat(
-    catalog: catalog,
-    systemPromptFragments: [kitchenPersona, kitchenUiRules, kitchenGuardrails],
-  ).systemPromptJoined();
-}
+String kitchenSystemPrompt(Catalog catalog) => PromptBuilder.chat(
+  catalog: catalog,
+  systemPromptFragments: [kitchenPersona, kitchenUiRules, kitchenGuardrails],
+).systemPromptJoined();

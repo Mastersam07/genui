@@ -6,7 +6,6 @@ const _catalogId = 'https://a2ui.org/specification/v0_9/catalogs/basic/catalog.j
 Stream<String> replayRecordedReply(String message) async* {
   final reply = message.contains('start_cooking') ? _cookingSteps : _jollofRecipe;
   await Future<void>.delayed(const Duration(milliseconds: 700));
-  // Stream it in small pieces, like the real API does.
   for (var i = 0; i < reply.length; i += 48) {
     yield reply.substring(i, (i + 48).clamp(0, reply.length));
     await Future<void>.delayed(const Duration(milliseconds: 12));

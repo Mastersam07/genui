@@ -11,7 +11,6 @@ import 'theme.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (kDebugMode) {
-    // Print every A2UI message genui receives. Great for "what did Gemini send?"
     configureLogging(logCallback: (level, message) => debugPrint('genui $level: $message'));
   }
   if (!offlineDemo) {

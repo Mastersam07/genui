@@ -4,10 +4,6 @@ import 'package:json_schema_builder/json_schema_builder.dart';
 
 import '../theme.dart';
 
-// Writes a number into the surface's data model. Any widget bound to the
-// same path (like IngredientChecklist) rebuilds when it changes, with no
-// round trip to Gemini.
-
 final _servingsStepperSchema = S.object(
   description: 'Lets the user choose how many people they are cooking for.',
   properties: {
@@ -17,14 +13,23 @@ final _servingsStepperSchema = S.object(
   required: ['value', 'initial'],
 );
 
+extension type _ServingsStepperData(JsonMap json) {
+  String get path => switch (json['value']) {
+    {'path': final String path} => path,
+    _ => '/servings',
+  };
+
+  int get initial => switch (json['initial']) {
+    final num initial => initial.toInt(),
+    _ => 4,
+  };
+}
+
 final servingsStepper = CatalogItem(
   name: 'ServingsStepper',
   dataSchema: _servingsStepperSchema,
   widgetBuilder: (itemContext) {
-    final data = itemContext.data as JsonMap;
-    final ref = data['value'];
-    final path = ref is Map && ref['path'] is String ? ref['path'] as String : '/servings';
-    final initial = (data['initial'] as num?)?.toInt() ?? 4;
+    final _ServingsStepperData(:path, :initial) = _ServingsStepperData(itemContext.data as JsonMap);
 
     return BoundNumber(
       dataContext: itemContext.dataContext,
@@ -54,11 +59,11 @@ class ServingsStepper extends StatelessWidget {
     final text = Theme.of(context).textTheme;
     return Card(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: KitchenSpace.lg, vertical: KitchenSpace.sm),
+        padding: const .symmetric(horizontal: KitchenSpace.lg, vertical: KitchenSpace.sm),
         child: Row(
+          spacing: KitchenSpace.md,
           children: [
             const Icon(Icons.groups_outlined, color: KitchenColors.inkMuted),
-            const SizedBox(width: KitchenSpace.md),
             Expanded(child: Text('Cooking for', style: text.bodyLarge)),
             IconButton.outlined(
               tooltip: 'Fewer people',
@@ -66,10 +71,10 @@ class ServingsStepper extends StatelessWidget {
               icon: const Icon(Icons.remove),
             ),
             SizedBox(
-              width: 48,
+              width: 32, // fixed, so the buttons don't shift between 9 and 10
               child: Text(
                 '$servings',
-                textAlign: TextAlign.center,
+                textAlign: .center,
                 semanticsLabel: '$servings people',
                 style: text.titleLarge?.copyWith(fontFeatures: const [FontFeature.tabularFigures()]),
               ),

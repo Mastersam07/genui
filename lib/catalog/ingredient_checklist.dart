@@ -4,9 +4,6 @@ import 'package:json_schema_builder/json_schema_builder.dart';
 
 import '../theme.dart';
 
-// Reads the servings number from the data model and rescales every
-// quantity live. Gemini writes the list once; Flutter does the maths.
-
 final _ingredientChecklistSchema = S.object(
   description: 'A tickable shopping/prep list of ingredients with quantities.',
   properties: {
@@ -28,32 +25,53 @@ final _ingredientChecklistSchema = S.object(
   required: ['baseServings', 'ingredients'],
 );
 
+extension type _ChecklistData(JsonMap json) {
+  /// A literal number or a {"path": ...} binding; BoundNumber resolves both.
+  Object? get servings => json['servings'];
+
+  double get baseServings => switch (json['baseServings']) {
+    final num base when base > 0 => base.toDouble(),
+    _ => 1,
+  };
+
+  List<Ingredient> get ingredients => switch (json['ingredients']) {
+    final List<Object?> items => [for (final item in items) ?Ingredient.tryParse(item)],
+    _ => const [],
+  };
+}
+
 final ingredientChecklist = CatalogItem(
   name: 'IngredientChecklist',
   dataSchema: _ingredientChecklistSchema,
   widgetBuilder: (itemContext) {
-    final data = itemContext.data as JsonMap;
-    final base = (data['baseServings'] as num?)?.toDouble() ?? 1;
-    final ingredients = [
-      for (final item in (data['ingredients'] as List? ?? const []).cast<JsonMap>())
-        Ingredient(
-          name: item['name'] as String? ?? '',
-          quantity: (item['quantity'] as num?)?.toDouble() ?? 0,
-          unit: item['unit'] as String? ?? '',
-        ),
-    ];
+    final data = _ChecklistData(itemContext.data as JsonMap);
+    final ingredients = data.ingredients;
+    final base = data.baseServings;
 
     return BoundNumber(
       dataContext: itemContext.dataContext,
-      value: data['servings'],
+      value: data.servings,
       builder: (context, servings) =>
           IngredientChecklist(ingredients: ingredients, scale: (servings?.toDouble() ?? base) / base),
     );
   },
 );
 
-class Ingredient {
-  const Ingredient({required this.name, required this.quantity, required this.unit});
+final class Ingredient {
+  const Ingredient({required this.name, required this.quantity, this.unit = ''});
+
+  static Ingredient? tryParse(Object? json) => switch (json) {
+    {'name': final String name, 'quantity': final num quantity, 'unit': final String unit} => Ingredient(
+      name: name,
+      quantity: quantity.toDouble(),
+      unit: unit,
+    ),
+    {'name': final String name, 'quantity': final num quantity} => Ingredient(
+      name: name,
+      quantity: quantity.toDouble(),
+    ),
+    _ => null,
+  };
 
   final String name;
   final double quantity;
@@ -79,12 +97,12 @@ class _IngredientChecklistState extends State<IngredientChecklist> {
     final items = widget.ingredients;
     return Card(
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: KitchenSpace.md),
+        padding: const .symmetric(vertical: KitchenSpace.md),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(KitchenSpace.lg, 0, KitchenSpace.lg, KitchenSpace.sm),
+              padding: const .fromLTRB(KitchenSpace.lg, 0, KitchenSpace.lg, KitchenSpace.sm),
               child: Row(
                 children: [
                   Expanded(child: Text('Ingredients', style: text.titleLarge)),
@@ -95,12 +113,14 @@ class _IngredientChecklistState extends State<IngredientChecklist> {
                 ],
               ),
             ),
-            for (var i = 0; i < items.length; i++)
+            for (final (i, ingredient) in items.indexed)
               _IngredientRow(
-                ingredient: items[i],
+                ingredient: ingredient,
                 scale: widget.scale,
                 ready: _ready.contains(i),
-                onToggle: () => setState(() => _ready.contains(i) ? _ready.remove(i) : _ready.add(i)),
+                onToggle: () => setState(() {
+                  if (!_ready.remove(i)) _ready.add(i);
+                }),
               ),
           ],
         ),
@@ -131,8 +151,9 @@ class _IngredientRow extends StatelessWidget {
         label: '${ingredient.name}, $amount',
         excludeSemantics: true,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: KitchenSpace.lg, vertical: KitchenSpace.md),
+          padding: const .symmetric(horizontal: KitchenSpace.lg, vertical: KitchenSpace.md),
           child: Row(
+            spacing: KitchenSpace.md,
             children: [
               AnimatedContainer(
                 duration: KitchenMotion.quick,
@@ -140,29 +161,24 @@ class _IngredientRow extends StatelessWidget {
                 width: 24,
                 height: 24,
                 decoration: BoxDecoration(
-                  shape: BoxShape.circle,
+                  shape: .circle,
                   color: ready ? KitchenColors.done : KitchenColors.surface,
-                  border: Border.all(color: ready ? KitchenColors.done : KitchenColors.border, width: 2),
+                  border: .all(color: ready ? KitchenColors.done : KitchenColors.border, width: 2),
                 ),
                 child: ready ? const Icon(Icons.check, size: 16, color: KitchenColors.ink) : null,
               ),
-              const SizedBox(width: KitchenSpace.md),
               Expanded(
                 child: Text(
                   ingredient.name,
                   style: text.bodyLarge?.copyWith(
                     color: ready ? KitchenColors.inkMuted : KitchenColors.ink,
-                    decoration: ready ? TextDecoration.lineThrough : null,
+                    decoration: ready ? .lineThrough : null,
                   ),
                 ),
               ),
-              const SizedBox(width: KitchenSpace.md),
               Text(
                 amount,
-                style: text.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  fontFeatures: const [FontFeature.tabularFigures()],
-                ),
+                style: text.bodyMedium?.copyWith(fontWeight: .w600, fontFeatures: const [FontFeature.tabularFigures()]),
               ),
             ],
           ),

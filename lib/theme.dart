@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// The DevFest palette.
 abstract final class DevFestPalette {
   static const googleBlue = Color(0xFF4285F4);
   static const googleRed = Color(0xFFEA4335);
@@ -19,17 +18,15 @@ abstract final class DevFestPalette {
   static const black02 = Color(0xFF1E1E1E);
 }
 
-/// Colors by role, all taken from [DevFestPalette]. Surfaces are off-white
-/// with bold black outlines; Google colors are accents, never body text.
 abstract final class KitchenColors {
   static const background = DevFestPalette.offWhite;
-  static const surface = DevFestPalette.offWhite; // set apart by its outline
+  static const surface = DevFestPalette.offWhite;
   static const ink = DevFestPalette.black02;
   static const inkMuted = DevFestPalette.black02; // the palette has no grey: use weight and size
   static const border = DevFestPalette.black02;
   static const accent = DevFestPalette.googleBlue;
   static const accentSoft = DevFestPalette.pastelBlue;
-  static const action = DevFestPalette.black02; // primary buttons
+  static const action = DevFestPalette.black02;
   static const onAction = DevFestPalette.offWhite;
   static const brand = DevFestPalette.googleYellow;
   static const tag = DevFestPalette.pastelYellow;
@@ -102,20 +99,15 @@ ThemeData buildKitchenTheme() {
   ).apply(bodyColor: KitchenColors.ink, displayColor: KitchenColors.ink);
 
   final textTheme = body.copyWith(
-    headlineSmall: GoogleFonts.fraunces(
-      fontSize: 26,
-      fontWeight: FontWeight.w600,
-      height: 1.15,
-      color: KitchenColors.ink,
-    ),
-    titleLarge: GoogleFonts.fraunces(fontSize: 20, fontWeight: FontWeight.w600, color: KitchenColors.ink),
-    labelSmall: body.labelSmall?.copyWith(fontWeight: FontWeight.w700, letterSpacing: 1.1),
+    headlineSmall: GoogleFonts.fraunces(fontSize: 26, fontWeight: .w600, height: 1.15, color: KitchenColors.ink),
+    titleLarge: GoogleFonts.fraunces(fontSize: 20, fontWeight: .w600, color: KitchenColors.ink),
+    labelSmall: body.labelSmall?.copyWith(fontWeight: .w700, letterSpacing: 1.1),
   );
 
-  final controlShape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(KitchenRadius.control));
+  final controlShape = RoundedRectangleBorder(borderRadius: .circular(KitchenRadius.control));
 
   OutlineInputBorder inputBorder(Color color, [double width = 1]) => OutlineInputBorder(
-    borderRadius: BorderRadius.circular(KitchenRadius.control),
+    borderRadius: .circular(KitchenRadius.control),
     borderSide: BorderSide(color: color, width: width),
   );
 
@@ -130,9 +122,9 @@ ThemeData buildKitchenTheme() {
     cardTheme: CardThemeData(
       elevation: 0,
       color: KitchenColors.surface,
-      margin: EdgeInsets.zero,
+      margin: .zero,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(KitchenRadius.card),
+        borderRadius: .circular(KitchenRadius.card),
         side: const BorderSide(color: KitchenColors.border, width: 1.5),
       ),
     ),
@@ -142,7 +134,7 @@ ThemeData buildKitchenTheme() {
         foregroundColor: KitchenColors.onAction,
         minimumSize: const Size(48, 48),
         shape: controlShape,
-        textStyle: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
+        textStyle: textTheme.labelLarge?.copyWith(fontWeight: .w700),
       ),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
@@ -165,7 +157,7 @@ ThemeData buildKitchenTheme() {
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: KitchenColors.surface,
-      contentPadding: const EdgeInsets.symmetric(horizontal: KitchenSpace.lg, vertical: KitchenSpace.md),
+      contentPadding: const .symmetric(horizontal: KitchenSpace.lg, vertical: KitchenSpace.md),
       border: inputBorder(KitchenColors.border),
       enabledBorder: inputBorder(KitchenColors.border),
       focusedBorder: inputBorder(KitchenColors.accent, 2),
@@ -176,7 +168,7 @@ ThemeData buildKitchenTheme() {
       side: const BorderSide(color: KitchenColors.border),
       shape: controlShape,
       labelStyle: textTheme.bodyMedium?.copyWith(height: 1.3),
-      padding: const EdgeInsets.symmetric(horizontal: KitchenSpace.md, vertical: KitchenSpace.sm),
+      padding: const .symmetric(horizontal: KitchenSpace.md, vertical: KitchenSpace.sm),
     ),
     sliderTheme: const SliderThemeData(
       activeTrackColor: KitchenColors.accent,
@@ -184,9 +176,7 @@ ThemeData buildKitchenTheme() {
       inactiveTrackColor: DevFestPalette.pastelBlue,
     ),
     checkboxTheme: CheckboxThemeData(
-      fillColor: WidgetStateProperty.resolveWith(
-        (states) => states.contains(WidgetState.selected) ? KitchenColors.done : null,
-      ),
+      fillColor: .resolveWith((states) => states.contains(WidgetState.selected) ? KitchenColors.done : null),
     ),
     dividerTheme: const DividerThemeData(color: KitchenColors.border),
   );
