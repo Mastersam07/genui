@@ -7,6 +7,8 @@ You describe a dish. Gemini (through Firebase AI Logic) decides which widgets to
 show, and the [`genui`](https://pub.dev/packages/genui) package renders them as
 real Flutter widgets: a recipe card, a servings stepper, an ingredient checklist.
 
+**Following along in the workshop?** Open [WORKSHOP.md](WORKSHOP.md) for the copy-paste walkthrough, step by step.
+
 ## Checkpoints
 
 Each step is a git tag. Jump to any of them with `git checkout <tag>`.
