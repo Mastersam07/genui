@@ -82,7 +82,7 @@ class RecipeCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // The palm-oil band: the one bold mark that says "a recipe".
+            // The blue band: the one bold mark that says "a recipe".
             Container(width: 6, color: KitchenColors.accent),
             Expanded(
               child: Padding(
@@ -90,8 +90,16 @@ class RecipeCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (region != null)
-                      Text(region!.toUpperCase(), style: text.labelSmall?.copyWith(color: KitchenColors.accent)),
+                    if (region case final region?)
+                      Container(
+                        padding: const .symmetric(horizontal: KitchenSpace.sm, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: KitchenColors.tag,
+                          border: .all(color: KitchenColors.border),
+                          borderRadius: .circular(KitchenRadius.control),
+                        ),
+                        child: Text(region.toUpperCase(), style: text.labelSmall),
+                      ),
                     const SizedBox(height: KitchenSpace.xs),
                     Text(title, style: text.headlineSmall),
                     const SizedBox(height: KitchenSpace.sm),
@@ -139,7 +147,7 @@ class _SpiceMeter extends StatelessWidget {
       child: Row(
         children: [
           for (var i = 1; i <= 3; i++)
-            Icon(Icons.whatshot, size: 18, color: i <= clamped ? KitchenColors.accent : KitchenColors.border),
+            Icon(Icons.whatshot, size: 18, color: i <= clamped ? KitchenColors.spice : KitchenColors.spiceOff),
         ],
       ),
     );

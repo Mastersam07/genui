@@ -1,17 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Colors are named by role. Palm-oil red is the only accent: use it
-/// for the one action that matters on a screen, never for decoration.
+/// The DevFest palette.
+abstract final class DevFestPalette {
+  static const googleBlue = Color(0xFF4285F4);
+  static const googleRed = Color(0xFFEA4335);
+  static const googleYellow = Color(0xFFFBBC04);
+  static const googleGreen = Color(0xFF34A853);
+  static const halftoneBlue = Color(0xFF57CAFF);
+  static const halftoneYellow = Color(0xFFFFD427);
+  static const halftoneRed = Color(0xFFFF7DAF);
+  static const halftoneGreen = Color(0xFF5CDB6D);
+  static const pastelBlue = Color(0xFFC3ECF6);
+  static const pastelYellow = Color(0xFFFFE7A5);
+  static const pastelRed = Color(0xFFF8D8D8);
+  static const pastelGreen = Color(0xFFCCF6C5);
+  static const offWhite = Color(0xFFF0F0F0);
+  static const black02 = Color(0xFF1E1E1E);
+}
+
+/// Colors by role, all taken from [DevFestPalette]. Surfaces are off-white
+/// with bold black outlines; Google colors are accents, never body text.
 abstract final class KitchenColors {
-  static const background = Color(0xFFFBF6EE); // garri cream
-  static const surface = Color(0xFFFFFFFF);
-  static const ink = Color(0xFF2B1D14);
-  static const inkMuted = Color(0xFF7A6658);
-  static const border = Color(0xFFEADFD0);
-  static const accent = Color(0xFFC2410C); // palm oil
-  static const accentSoft = Color(0xFFFCE9DD);
-  static const done = Color(0xFF2F6B3A); // ewedu green
+  static const background = DevFestPalette.offWhite;
+  static const surface = DevFestPalette.offWhite; // set apart by its outline
+  static const ink = DevFestPalette.black02;
+  static const inkMuted = DevFestPalette.black02; // the palette has no grey: use weight and size
+  static const border = DevFestPalette.black02;
+  static const accent = DevFestPalette.googleBlue;
+  static const accentSoft = DevFestPalette.pastelBlue;
+  static const action = DevFestPalette.black02; // primary buttons
+  static const onAction = DevFestPalette.offWhite;
+  static const brand = DevFestPalette.googleYellow;
+  static const tag = DevFestPalette.pastelYellow;
+  static const spice = DevFestPalette.googleRed;
+  static const spiceOff = DevFestPalette.pastelRed;
+  static const done = DevFestPalette.googleGreen;
+  static const error = DevFestPalette.googleRed;
 }
 
 abstract final class KitchenSpace {
@@ -37,11 +62,38 @@ abstract final class KitchenMotion {
 ThemeData buildKitchenTheme() {
   final base = ThemeData(
     useMaterial3: true,
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: KitchenColors.accent,
+    // Spelled out instead of fromSeed, so Material never invents a tint
+    // outside the palette.
+    colorScheme: const ColorScheme.light(
       primary: KitchenColors.accent,
+      onPrimary: DevFestPalette.black02,
+      primaryContainer: DevFestPalette.pastelBlue,
+      onPrimaryContainer: DevFestPalette.black02,
+      secondary: DevFestPalette.googleGreen,
+      onSecondary: DevFestPalette.black02,
+      secondaryContainer: DevFestPalette.pastelGreen,
+      onSecondaryContainer: DevFestPalette.black02,
+      tertiary: DevFestPalette.googleYellow,
+      onTertiary: DevFestPalette.black02,
+      tertiaryContainer: DevFestPalette.pastelYellow,
+      onTertiaryContainer: DevFestPalette.black02,
+      error: KitchenColors.error,
+      onError: DevFestPalette.black02,
+      errorContainer: DevFestPalette.pastelRed,
+      onErrorContainer: DevFestPalette.black02,
       surface: KitchenColors.background,
       onSurface: KitchenColors.ink,
+      onSurfaceVariant: KitchenColors.ink,
+      surfaceContainerLowest: DevFestPalette.offWhite,
+      surfaceContainerLow: DevFestPalette.offWhite,
+      surfaceContainer: DevFestPalette.offWhite,
+      surfaceContainerHigh: DevFestPalette.pastelBlue,
+      surfaceContainerHighest: DevFestPalette.pastelBlue,
+      outline: KitchenColors.border,
+      outlineVariant: KitchenColors.border,
+      inverseSurface: DevFestPalette.black02,
+      onInverseSurface: DevFestPalette.offWhite,
+      surfaceTint: DevFestPalette.offWhite,
     ),
   );
 
@@ -69,6 +121,11 @@ ThemeData buildKitchenTheme() {
 
   return base.copyWith(
     scaffoldBackgroundColor: KitchenColors.background,
+    // Hover, press and focus feedback in a palette color, not Material's grey.
+    hoverColor: DevFestPalette.pastelBlue,
+    highlightColor: DevFestPalette.pastelBlue,
+    splashColor: DevFestPalette.pastelBlue,
+    focusColor: DevFestPalette.pastelBlue,
     textTheme: textTheme,
     cardTheme: CardThemeData(
       elevation: 0,
@@ -76,13 +133,13 @@ ThemeData buildKitchenTheme() {
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(KitchenRadius.card),
-        side: const BorderSide(color: KitchenColors.border),
+        side: const BorderSide(color: KitchenColors.border, width: 1.5),
       ),
     ),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
-        backgroundColor: KitchenColors.accent,
-        foregroundColor: Colors.white,
+        backgroundColor: KitchenColors.action,
+        foregroundColor: KitchenColors.onAction,
         minimumSize: const Size(48, 48),
         shape: controlShape,
         textStyle: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
@@ -91,8 +148,8 @@ ThemeData buildKitchenTheme() {
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         elevation: 0,
-        backgroundColor: KitchenColors.accent,
-        foregroundColor: Colors.white,
+        backgroundColor: KitchenColors.action,
+        foregroundColor: KitchenColors.onAction,
         minimumSize: const Size(48, 48),
         shape: controlShape,
       ),
@@ -111,11 +168,11 @@ ThemeData buildKitchenTheme() {
       contentPadding: const EdgeInsets.symmetric(horizontal: KitchenSpace.lg, vertical: KitchenSpace.md),
       border: inputBorder(KitchenColors.border),
       enabledBorder: inputBorder(KitchenColors.border),
-      focusedBorder: inputBorder(KitchenColors.accent, 1.5),
+      focusedBorder: inputBorder(KitchenColors.accent, 2),
       hintStyle: textTheme.bodyLarge?.copyWith(color: KitchenColors.inkMuted),
     ),
     chipTheme: ChipThemeData(
-      backgroundColor: KitchenColors.surface,
+      backgroundColor: DevFestPalette.pastelBlue,
       side: const BorderSide(color: KitchenColors.border),
       shape: controlShape,
       labelStyle: textTheme.bodyMedium?.copyWith(height: 1.3),
@@ -124,7 +181,7 @@ ThemeData buildKitchenTheme() {
     sliderTheme: const SliderThemeData(
       activeTrackColor: KitchenColors.accent,
       thumbColor: KitchenColors.accent,
-      inactiveTrackColor: KitchenColors.border,
+      inactiveTrackColor: DevFestPalette.pastelBlue,
     ),
     checkboxTheme: CheckboxThemeData(
       fillColor: WidgetStateProperty.resolveWith(

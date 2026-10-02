@@ -141,10 +141,10 @@ class _IngredientRow extends StatelessWidget {
                 height: 24,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: ready ? KitchenColors.done : Colors.transparent,
+                  color: ready ? KitchenColors.done : KitchenColors.surface,
                   border: Border.all(color: ready ? KitchenColors.done : KitchenColors.border, width: 2),
                 ),
-                child: ready ? const Icon(Icons.check, size: 16, color: Colors.white) : null,
+                child: ready ? const Icon(Icons.check, size: 16, color: KitchenColors.ink) : null,
               ),
               const SizedBox(width: KitchenSpace.md),
               Expanded(
