@@ -56,26 +56,16 @@ ThemeData buildKitchenTheme() {
       height: 1.15,
       color: KitchenColors.ink,
     ),
-    titleLarge: GoogleFonts.fraunces(
-      fontSize: 20,
-      fontWeight: FontWeight.w600,
-      color: KitchenColors.ink,
-    ),
-    labelSmall: body.labelSmall?.copyWith(
-      fontWeight: FontWeight.w700,
-      letterSpacing: 1.1,
-    ),
+    titleLarge: GoogleFonts.fraunces(fontSize: 20, fontWeight: FontWeight.w600, color: KitchenColors.ink),
+    labelSmall: body.labelSmall?.copyWith(fontWeight: FontWeight.w700, letterSpacing: 1.1),
   );
 
-  final controlShape = RoundedRectangleBorder(
+  final controlShape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(KitchenRadius.control));
+
+  OutlineInputBorder inputBorder(Color color, [double width = 1]) => OutlineInputBorder(
     borderRadius: BorderRadius.circular(KitchenRadius.control),
+    borderSide: BorderSide(color: color, width: width),
   );
-
-  OutlineInputBorder inputBorder(Color color, [double width = 1]) =>
-      OutlineInputBorder(
-        borderRadius: BorderRadius.circular(KitchenRadius.control),
-        borderSide: BorderSide(color: color, width: width),
-      );
 
   return base.copyWith(
     scaffoldBackgroundColor: KitchenColors.background,
@@ -118,10 +108,7 @@ ThemeData buildKitchenTheme() {
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: KitchenColors.surface,
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: KitchenSpace.lg,
-        vertical: KitchenSpace.md,
-      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: KitchenSpace.lg, vertical: KitchenSpace.md),
       border: inputBorder(KitchenColors.border),
       enabledBorder: inputBorder(KitchenColors.border),
       focusedBorder: inputBorder(KitchenColors.accent, 1.5),
@@ -140,8 +127,7 @@ ThemeData buildKitchenTheme() {
     ),
     checkboxTheme: CheckboxThemeData(
       fillColor: WidgetStateProperty.resolveWith(
-        (states) =>
-            states.contains(WidgetState.selected) ? KitchenColors.done : null,
+        (states) => states.contains(WidgetState.selected) ? KitchenColors.done : null,
       ),
     ),
     dividerTheme: const DividerThemeData(color: KitchenColors.border),

@@ -13,12 +13,7 @@ class KitchenHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        KitchenSpace.xl,
-        KitchenSpace.lg,
-        KitchenSpace.xl,
-        KitchenSpace.md,
-      ),
+      padding: const EdgeInsets.fromLTRB(KitchenSpace.xl, KitchenSpace.lg, KitchenSpace.xl, KitchenSpace.md),
       child: Row(
         children: [
           Container(
@@ -37,12 +32,7 @@ class KitchenHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Naija Kitchen', style: text.titleLarge),
-                Text(
-                  'Tell me what is in your pot.',
-                  style: text.bodySmall?.copyWith(
-                    color: KitchenColors.inkMuted,
-                  ),
-                ),
+                Text('Tell me what is in your pot.', style: text.bodySmall?.copyWith(color: KitchenColors.inkMuted)),
               ],
             ),
           ),
@@ -63,10 +53,7 @@ class UserMessage extends StatelessWidget {
       alignment: Alignment.centerRight,
       child: Container(
         constraints: const BoxConstraints(maxWidth: 420),
-        padding: const EdgeInsets.symmetric(
-          horizontal: KitchenSpace.lg,
-          vertical: KitchenSpace.md,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: KitchenSpace.lg, vertical: KitchenSpace.md),
         decoration: BoxDecoration(
           color: KitchenColors.accentSoft,
           borderRadius: BorderRadius.circular(KitchenRadius.card),
@@ -102,12 +89,8 @@ class CookingIndicator extends StatefulWidget {
   State<CookingIndicator> createState() => _CookingIndicatorState();
 }
 
-class _CookingIndicatorState extends State<CookingIndicator>
-    with SingleTickerProviderStateMixin {
-  late final _controller = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 900),
-  )..repeat();
+class _CookingIndicatorState extends State<CookingIndicator> with SingleTickerProviderStateMixin {
+  late final _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 900))..repeat();
 
   @override
   void dispose() {
@@ -132,10 +115,7 @@ class _CookingIndicatorState extends State<CookingIndicator>
                   padding: const EdgeInsets.only(right: KitchenSpace.xs),
                   child: Transform.translate(
                     offset: Offset(0, -lift),
-                    child: const CircleAvatar(
-                      radius: 4,
-                      backgroundColor: KitchenColors.accent,
-                    ),
+                    child: const CircleAvatar(radius: 4, backgroundColor: KitchenColors.accent),
                   ),
                 );
               },
@@ -143,9 +123,7 @@ class _CookingIndicatorState extends State<CookingIndicator>
           const SizedBox(width: KitchenSpace.sm),
           Text(
             'Stirring the pot…',
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: KitchenColors.inkMuted),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: KitchenColors.inkMuted),
           ),
         ],
       ),
@@ -173,11 +151,7 @@ class EmptyKitchen extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
-              Icons.ramen_dining_outlined,
-              size: 56,
-              color: KitchenColors.border,
-            ),
+            const Icon(Icons.ramen_dining_outlined, size: 56, color: KitchenColors.border),
             const SizedBox(height: KitchenSpace.lg),
             Text(
               'Ask for any Nigerian dish.\nI will plate up the recipe for you.',
@@ -189,10 +163,7 @@ class EmptyKitchen extends StatelessWidget {
               alignment: WrapAlignment.center,
               spacing: KitchenSpace.sm,
               runSpacing: KitchenSpace.sm,
-              children: [
-                for (final s in suggestions)
-                  ActionChip(label: Text(s), onPressed: () => onSuggestion(s)),
-              ],
+              children: [for (final s in suggestions) ActionChip(label: Text(s), onPressed: () => onSuggestion(s))],
             ),
           ],
         ),
@@ -219,10 +190,7 @@ class ErrorNote extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Gemini did not answer that one.',
-            style: text.titleSmall?.copyWith(fontWeight: FontWeight.w700),
-          ),
+          Text('Gemini did not answer that one.', style: text.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
           const SizedBox(height: KitchenSpace.xs),
           Text(
             message,
@@ -231,11 +199,7 @@ class ErrorNote extends StatelessWidget {
             style: text.bodySmall?.copyWith(color: KitchenColors.inkMuted),
           ),
           const SizedBox(height: KitchenSpace.md),
-          OutlinedButton.icon(
-            onPressed: onRetry,
-            icon: const Icon(Icons.refresh),
-            label: const Text('Try again'),
-          ),
+          OutlinedButton.icon(onPressed: onRetry, icon: const Icon(Icons.refresh), label: const Text('Try again')),
         ],
       ),
     );
@@ -270,12 +234,7 @@ class _ComposerState extends State<Composer> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        KitchenSpace.lg,
-        KitchenSpace.sm,
-        KitchenSpace.lg,
-        KitchenSpace.lg,
-      ),
+      padding: const EdgeInsets.fromLTRB(KitchenSpace.lg, KitchenSpace.sm, KitchenSpace.lg, KitchenSpace.lg),
       child: Row(
         children: [
           Expanded(
@@ -283,19 +242,14 @@ class _ComposerState extends State<Composer> {
               controller: _text,
               textInputAction: TextInputAction.send,
               onSubmitted: (_) => _submit(),
-              decoration: const InputDecoration(
-                hintText: 'e.g. Efo riro with what I have at home',
-              ),
+              decoration: const InputDecoration(hintText: 'e.g. Efo riro with what I have at home'),
             ),
           ),
           const SizedBox(width: KitchenSpace.sm),
           IconButton.filled(
             onPressed: widget.enabled ? _submit : null,
             tooltip: 'Send',
-            style: IconButton.styleFrom(
-              backgroundColor: KitchenColors.accent,
-              minimumSize: const Size(48, 48),
-            ),
+            style: IconButton.styleFrom(backgroundColor: KitchenColors.accent, minimumSize: const Size(48, 48)),
             icon: const Icon(Icons.arrow_upward),
           ),
         ],
