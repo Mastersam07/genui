@@ -61,11 +61,44 @@ Here is a simple one.
 ```
 ''';
 
+const recipeReply = '''
+```json
+{"version": "v0.9", "createSurface": {"surfaceId": "jollof", "catalogId": "https://a2ui.org/specification/v0_9/catalogs/basic/catalog.json", "sendDataModel": true}}
+```
+```json
+{"version": "v0.9", "updateComponents": {"surfaceId": "jollof", "components": [
+  {"id": "root", "component": "Column", "children": ["card"]},
+  {"id": "card", "component": "RecipeCard", "title": "Party Jollof Rice", "region": "Nationwide",
+   "description": "Smoky, tomato-rich rice.", "minutes": 75, "spiceLevel": 2,
+   "action": {"event": {"name": "start_cooking", "context": {"dish": "Party Jollof Rice"}}}}
+]}}
+```
+''';
+
 void main() {
   configureLogging(level: Level.ALL, logCallback: (l, m) => debugPrint("GENUI $l $m"));
   testWidgets('basic catalog surface renders from streamed text', (tester) async {
     await pumpReply(tester, basicReply);
     expect(find.text('Party Jollof Rice'), findsOneWidget);
     expect(find.text('Start cooking'), findsOneWidget);
+  });
+
+  testWidgets('RecipeCard renders and sends start_cooking back to the model', (tester) async {
+    final controller = await pumpReply(tester, recipeReply);
+    final submitted = <ChatMessage>[];
+    final sub = controller.onSubmit.listen(submitted.add);
+    addTearDown(sub.cancel);
+
+    expect(find.text('Party Jollof Rice'), findsOneWidget);
+    expect(find.text('75 min'), findsOneWidget);
+
+    await tester.runAsync(() async {
+      await tester.tap(find.text('Start cooking'));
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+    });
+    expect(submitted, hasLength(1));
+    final interaction = submitted.single.parts.uiInteractionParts.single.interaction;
+    expect(interaction, contains('start_cooking'));
+    expect(interaction, contains('Party Jollof Rice'));
   });
 }
