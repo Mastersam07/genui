@@ -61,6 +61,8 @@ class _KitchenPageState extends State<KitchenPage> {
   late final StreamSubscription<ConversationEvent> _events;
   final _entries = <_Entry>[];
   final _scroll = ScrollController();
+  final _surfaceKeys = <String, GlobalKey>{};
+  String? _newestSurfaceId; // the surface from the current turn, if any
   String? _lastPrompt;
 
   @override
@@ -104,8 +106,11 @@ class _KitchenPageState extends State<KitchenPage> {
       switch (event) {
         case ConversationSurfaceAdded(:final surfaceId):
           _entries.add(_SurfaceEntry(surfaceId));
+          _surfaceKeys[surfaceId] = GlobalKey();
+          _newestSurfaceId = surfaceId;
         case ConversationSurfaceRemoved(:final surfaceId):
           _entries.removeWhere((e) => e is _SurfaceEntry && e.surfaceId == surfaceId);
+          _surfaceKeys.remove(surfaceId);
         case ConversationContentReceived(:final text):
           final last = _entries.lastOrNull;
           if (last is _AiTextEntry) {
@@ -119,7 +124,7 @@ class _KitchenPageState extends State<KitchenPage> {
           break;
       }
     });
-    _scrollToEnd();
+    _scrollToLatest();
   }
 
   void _send(String text) {
@@ -127,7 +132,8 @@ class _KitchenPageState extends State<KitchenPage> {
     if (prompt.isEmpty || _conversation.state.value.isWaiting) return;
     setState(() => _entries.add(_UserEntry(prompt)));
     _lastPrompt = prompt;
-    _scrollToEnd();
+    _newestSurfaceId = null;
+    _scrollToLatest();
     _conversation.sendRequest(ChatMessage.user(prompt));
   }
 
@@ -138,9 +144,16 @@ class _KitchenPageState extends State<KitchenPage> {
     _conversation.sendRequest(ChatMessage.user(prompt));
   }
 
-  void _scrollToEnd() {
+  /// Shows the top of this turn's generated UI (the recipe title), or the
+  /// end of the list when there is no new surface yet.
+  void _scrollToLatest() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_scroll.hasClients) return;
+      final surfaceContext = _surfaceKeys[_newestSurfaceId]?.currentContext;
+      if (surfaceContext != null) {
+        Scrollable.ensureVisible(surfaceContext, duration: KitchenMotion.standard, curve: KitchenMotion.curve);
+        return;
+      }
       _scroll.animateTo(_scroll.position.maxScrollExtent, duration: KitchenMotion.standard, curve: KitchenMotion.curve);
     });
   }
@@ -150,6 +163,7 @@ class _KitchenPageState extends State<KitchenPage> {
       _UserEntry(:final text) => UserMessage(text),
       _AiTextEntry(:final text) => AssistantMessage(text),
       _SurfaceEntry(:final surfaceId) => Align(
+        key: _surfaceKeys[surfaceId],
         alignment: Alignment.centerLeft,
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 560),

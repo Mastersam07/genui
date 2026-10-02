@@ -118,7 +118,8 @@ ThemeData buildKitchenTheme() {
       backgroundColor: KitchenColors.surface,
       side: const BorderSide(color: KitchenColors.border),
       shape: controlShape,
-      labelStyle: textTheme.bodyMedium,
+      labelStyle: textTheme.bodyMedium?.copyWith(height: 1.3),
+      padding: const EdgeInsets.symmetric(horizontal: KitchenSpace.md, vertical: KitchenSpace.sm),
     ),
     sliderTheme: const SliderThemeData(
       activeTrackColor: KitchenColors.accent,
