@@ -88,7 +88,7 @@ Jollof coming up!
    "action": {"event": {"name": "start_cooking", "context": {"dish": "Party Jollof Rice", "servings": {"path": "/servings"}}}}},
   {"id": "servings", "component": "ServingsStepper", "value": {"path": "/servings"}, "initial": 4},
   {"id": "list", "component": "IngredientChecklist", "servings": {"path": "/servings"}, "baseServings": 4,
-   "ingredients": [{"name": "Long-grain rice", "quantity": 4, "unit": "cups"}, {"name": "Tatashe", "quantity": 2, "unit": "pieces"}]}
+   "ingredients": [{"name": "Long-grain rice", "quantity": 4, "unit": "cups"}, {"name": "Tatashe", "quantity": 3, "unit": "pieces"}]}
 ]}}
 ```
 ''';
@@ -134,7 +134,7 @@ void main() {
     }
     expect(find.text('6'), findsOneWidget);
     expect(find.text('6 cups'), findsOneWidget);
-    expect(find.text('3 pieces'), findsOneWidget);
+    expect(find.text('5 pieces'), findsOneWidget); // 4.5 rounds up
 
     // The chosen servings ride along when the user taps Start cooking.
     final submitted = <ChatMessage>[];

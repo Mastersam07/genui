@@ -120,7 +120,10 @@ class _IngredientRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
-    final amount = [formatQuantity(ingredient.quantity * scale), ingredient.unit].join(' ').trim();
+    final scaled = ingredient.quantity * scale;
+    // Nobody buys half a tomato: whole items round up.
+    final countable = ingredient.unit.isEmpty || ingredient.unit.startsWith('piece');
+    final amount = [formatQuantity(countable ? scaled.ceilToDouble() : scaled), ingredient.unit].join(' ').trim();
     return InkWell(
       onTap: onToggle,
       child: Semantics(

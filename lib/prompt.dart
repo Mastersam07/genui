@@ -25,11 +25,21 @@ const kitchenUiRules = '''
   amounts you mention to the servings in the event context.
 ''';
 
+/// Keeps the assistant on topic and honest.
+const kitchenGuardrails = '''
+- Only help with food, cooking and meal planning. For anything else, say in
+  one friendly sentence that you only talk food, and suggest a dish.
+- Never make medical or nutrition claims. Mention common allergens (groundnut,
+  crayfish, egusi) in the description when a dish contains them.
+- If the request is vague ("something with yam"), offer two or three dishes
+  as Buttons and let the user pick, instead of asking in plain text.
+''';
+
 /// PromptBuilder adds the A2UI protocol rules and the JSON schema of every
 /// widget in [catalog]. We only add the parts that are about our app.
 String kitchenSystemPrompt(Catalog catalog) {
   return PromptBuilder.chat(
     catalog: catalog,
-    systemPromptFragments: [kitchenPersona, kitchenUiRules],
+    systemPromptFragments: [kitchenPersona, kitchenUiRules, kitchenGuardrails],
   ).systemPromptJoined();
 }

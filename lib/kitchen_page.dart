@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:firebase_ai/firebase_ai.dart';
 import 'package:flutter/material.dart';
 import 'package:genui/genui.dart' hide TextPart;
 import 'package:genui/genui.dart' as genui;
@@ -11,7 +10,7 @@ import 'prompt.dart';
 import 'theme.dart';
 import 'widgets/kitchen_chrome.dart';
 
-// STEP 2: Gemini now answers with UI. The page no longer knows what a
+// STEP 5 (final): Gemini answers with UI. The page no longer knows what a
 // recipe screen looks like. It only knows how to show a Surface.
 
 sealed class _Entry {}
@@ -56,7 +55,8 @@ class _KitchenPageState extends State<KitchenPage> {
   // 4. Runs the loop: prompt -> Gemini -> surfaces -> user taps -> Gemini.
   late final Conversation _conversation = Conversation(controller: _controller, transport: _transport);
 
-  late final ChatSession _chat = startKitchenChat(systemInstruction: kitchenSystemPrompt(_catalog));
+  // Live Gemini, or a recorded reply when run with OFFLINE_DEMO=true.
+  late final KitchenChef _chef = KitchenChef(systemInstruction: kitchenSystemPrompt(_catalog));
 
   late final StreamSubscription<ConversationEvent> _events;
   final _entries = <_Entry>[];
@@ -94,10 +94,8 @@ class _KitchenPageState extends State<KitchenPage> {
     }
     if (buffer.isEmpty) return;
 
-    final stream = _chat.sendMessageStream(Content.text(buffer.toString()));
-    await for (final chunk in stream) {
-      final text = chunk.text;
-      if (text != null && text.isNotEmpty) _transport.addChunk(text);
+    await for (final text in _chef.reply(buffer.toString())) {
+      if (text.isNotEmpty) _transport.addChunk(text);
     }
   }
 

@@ -41,3 +41,20 @@ Each step is a git tag. Jump to any of them with `git checkout <tag>`.
 
 `lib/gemini.dart` uses `gemini-3.8-flash`. If you hit a quota, change it to
 `gemini-3.5-flash-lite`.
+
+## No Wi-Fi? Offline demo mode
+
+```bash
+flutter run -d chrome --dart-define=OFFLINE_DEMO=true
+```
+
+This replays a recorded Gemini conversation (jollof recipe, then cooking
+steps) through the same genui parser and catalog. Firebase is never touched,
+so it works without running `flutterfire configure`.
+
+## Tests
+
+`flutter test` streams canned Gemini replies through the real genui pipeline.
+The tests check that surfaces render, that the servings stepper rescales the
+checklist through the data model, and that "Start cooking" sends the event
+back to the model. No network is needed.
